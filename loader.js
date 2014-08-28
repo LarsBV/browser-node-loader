@@ -213,7 +213,7 @@ function main(_bower_files) {
     // Sort the dependency graph
     load_order = toposort(edges).reverse();
 
-    // Output a loader script
+    // loader script, we call toString() on the function object later, this way we get syntax highlighting, etc. for dev
     code = '(' + (function() {
         return function(object_container, load_order, resolutions) {
 
