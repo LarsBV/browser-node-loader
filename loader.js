@@ -297,6 +297,7 @@ function main(_bower_files) {
                     if (added_keys.length > 0) {
                         if (has_exported[filename] !== true) {
                             object_container[container_index] = window[added_keys[0]];
+                            has_exported[filename] = true;
                             console.error('Variable window[' + added_keys[0] + '] taken as export in lieu of explicit module.exports. @' + filename);
                         }
 
