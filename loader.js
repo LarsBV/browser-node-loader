@@ -48,7 +48,11 @@ function resolve(_file, _base) {
     if(bower_files[file])
     {
         file = bower_files[file];
-        if(file.substr(-3) === '.js') {
+        if(file instanceof Array) {
+            console.log('Package', _file, 'has the following main files:', JSON.stringify(file, null, 4), '\nthe first was choosen.');
+            return file[0];
+        }
+        else if(file.substr(-3) === '.js') {
             return file; //url.resolve(base, file);
         }
     }
