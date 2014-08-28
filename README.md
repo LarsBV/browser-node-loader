@@ -46,8 +46,8 @@ but it is usually not a problem.
 What these scripts export through setting 'module.export' is available with require('dropbox') 
 just as in node.js. 
 
-Any keys set on the global object is deleted, although if there is no module.export then the 
-first key is used as such.
+Any keys set on the global object is set to undefined, but if module.export has not been used 
+its set to the first key.
 
 Requires no configuration files. Path resolution is as follows:
 
