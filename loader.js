@@ -295,7 +295,7 @@ function main(_bower_files) {
 
                     var current_keys = Object.keys(window);
                     var added_keys = current_keys.filter(function (n) {
-                        return (initial_keys.indexOf(n) === -1);
+                        return (initial_keys.indexOf(n) === -1 && window[n] !== undefined);
                     });
 
                     if (added_keys.length > 0) {
@@ -306,7 +306,7 @@ function main(_bower_files) {
                         }
 
                         added_keys.forEach(function (key) {
-                            delete window[key];
+                            window[key] = undefined;
                         });
                     }
                     
