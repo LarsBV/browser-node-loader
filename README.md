@@ -46,8 +46,11 @@ but it is usually not a problem.
 What these scripts export through setting 'module.export' is available with require('dropbox') 
 just as in node.js. 
 
-Any keys set on the global object is set to undefined, but if module.export has not been used 
-its set to the first key.
+Current variables set on the global object is not touched, since they can't be deleted, 
+and it is not possible to delete them, and currently I haven't judged it worth it to mask 
+them to specific files ( I would appreciate some input on that ).
+
+If module.export has not been used its set to the first new key added to the global object from this file.
 
 Requires no configuration files. Path resolution is as follows:
 

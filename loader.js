@@ -220,11 +220,7 @@ function main(_bower_files) {
     // loader script, we call toString() on the function object later, this way we get syntax highlighting, etc. for dev
     code = '(' + (function() {
         return function(object_container, load_order, resolutions) {
-
-            var makeOnLoadHandler;
-            var i;
-            var el;
-            var initial_keys;
+            var makeOnLoadHandler, i, el, initial_keys, previous_keys;
             var has_exported = {};
             
             window.get_filename = function() {
@@ -280,7 +276,8 @@ function main(_bower_files) {
 
             /* Record what keys has been set on the global (window) object, so we can remove them later. */
             initial_keys = Object.keys(window);
-
+            previous_keys = initial_keys;
+            
             makeOnLoadHandler = function (index) {
                 /* Keep an out on which file we are loading. Because get_filename() won't have the right call stack
                  * from an asynchronous event defined this file. */
@@ -295,8 +292,9 @@ function main(_bower_files) {
 
                     var current_keys = Object.keys(window);
                     var added_keys = current_keys.filter(function (n) {
-                        return (initial_keys.indexOf(n) === -1 && window[n] !== undefined);
+                        return (previous_keys.indexOf(n) === -1);
                     });
+                    previous_keys = current_keys;
 
                     if (added_keys.length > 0) {
                         if (has_exported[filename] !== true) {
@@ -304,17 +302,15 @@ function main(_bower_files) {
                             has_exported[filename] = true;
                             console.error('Variable window[' + added_keys[0] + '] taken as export in lieu of explicit module.exports. @' + filename);
                         }
-
-                        added_keys.forEach(function (key) {
-                            window[key] = undefined;
-                        });
                     }
                     
-                    /*
                     if(index === load_order.length - 1) {
-                     // Last object loaded, fire an event or something here.
+                        // Last object loaded.
+                        var pollution = current_keys.filter(function (n) {
+                            return (initial_keys.indexOf(n) === -1);
+                        });
+                        console.error('global object has been polluted with the following keys:', pollution);
                     }
-                    */
                 };
             };
 
