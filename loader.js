@@ -10,7 +10,7 @@ var toposort = require('toposort');
 var exec = require('child_process').exec;
 
 if(process.argv.length < 4) {
-    console.log('use: loader <output_file> <entry_point_1> [entry_point_2..]');
+    console.log('use: loader <output_file.js> <entry_point_1.js> [entry_point_2.js..]');
     return 1;
 }
 
@@ -192,6 +192,11 @@ function main(_bower_files) {
     // The topological sort puts the last dependencies first
     // so entry_points is reversed.
     entry_points.reverse().forEach(function(file) {
+        if(file.substr(-3) !== '.js') {
+            errors.push('Entry points has to be \'.js\' files, '+file+' is not');
+            return;
+        }
+        
         scan_file(file);
     });
 
@@ -216,6 +221,8 @@ function main(_bower_files) {
             var i;
             var el;
             var initial_keys;
+            var has_exported = {};
+            
             window.get_filename = function() {
                 // Use the printStackTrace library
                 var trace = printStackTrace(); // jshint ignore:line
@@ -236,7 +243,9 @@ function main(_bower_files) {
                 },
                 set: function(x)
                 {
-                    var obj = resolutions[window.get_filename()]['.'];
+                    var filename = window.get_filename();
+                    var obj = resolutions[filename]['.'];
+                    has_exported[filename] = true;
                     if(x !== object_container[obj]) {
                         object_container[obj] = x;
                     }
@@ -286,10 +295,7 @@ function main(_bower_files) {
                     });
 
                     if (added_keys.length > 0) {
-                        if (object_container[container_index] === undefined ||
-                            ((object_container[container_index] instanceof Function) === false &&
-                            Object.keys(object_container[container_index]).length === 0)
-                        ) {
+                        if (has_exported[filename] !== true) {
                             object_container[container_index] = window[added_keys[0]];
                             console.error('Variable window[' + added_keys[0] + '] taken as export in lieu of explicit module.exports. @' + filename);
                         }
@@ -298,11 +304,12 @@ function main(_bower_files) {
                             delete window[key];
                         });
                     }
+                    
                     /*
-                     if(index === load_order.length - 1) {
+                    if(index === load_order.length - 1) {
                      // Last object loaded, fire an event or something here.
-                     }
-                     */
+                    }
+                    */
                 };
             };
 
