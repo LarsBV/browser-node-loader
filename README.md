@@ -40,8 +40,8 @@ a generated example is in the directory `example/`.
 
 To include a file use require('foo.js') or template('bar.tpl.html'), this scripts wraps 
 each include without modifying any code, such that they (hopefully) think they are being 
-loaded inside node.js. We can't prohibit them from finding the global window object but it 
-is usually not a problem.
+loaded inside node.js. We can't prevent the scripts from finding the global window object 
+but it is usually not a problem.
 
 What these scripts export through setting 'module.export' is available with require('dropbox') 
 just as in node.js. 
