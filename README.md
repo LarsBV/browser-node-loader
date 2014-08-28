@@ -6,25 +6,35 @@ but without the bundling or any configuration files.
 
 The command
 
-    loader.js <output_file> <entry_point_1> [entry_point_2..]
+    loader.js <output_file.js> <entry_point_1.js> [entry_point_2.js..]
 
 generates one javascript file that includes the needed dependencies using DOM manipulation. 
 
-`entry_point_1:`
+`index.html:`
 
     <html>
-      <head>
-        <script src="stacktrace.js" />
-        <script src="output_file.js" />
-      </head>
+    <head>
+        <script src="../stacktrace.js"></script>
+        <script src="output_file.js"></script>
+    </head>
     <body>
-      <script>
-        var Backbone = require('backbone');
-        var my_template = template('page.tpl.html');
-        console.log(Backbone.version);
-      </script>
     </body>
     </html>
+
+`entry_point_1.js:`
+
+    var Backbone = require('backbone');
+    var my_template = template('page.tpl.html');
+    
+    module.exports = undefined; // We always define what we export, even if nothing
+    
+    console.log('Backbone: ', Backbone.VERSION);
+    console.log('Template: ', my_template);
+
+a generated example is in the directory `example/`.
+
+
+
 
 ### How it works
 
@@ -49,3 +59,19 @@ Requires no configuration files. Path resolution is as follows:
 
 In order to behave correctly at runtime the script needs to know from where require/template/module.export is called 
 to do so stacktrace.js is used to throw an exception, catch the trace and extract the filename.
+
+### Why
+
+Because Browserify, Gulp & Bower together is very smart, but a bit troublesome to setup, especially if you
+want proper sourcemap support.
+
+Proper sourcemap support is still a dream, even in the newest versions of chrome & firefox (28/8/2014)
+
+They don't handle reload very well, exceptions are sometimes broken, and firefox has a nasty bug concerning 
+sourceMapURL.
+
+This script tries it hardest at path resolution without arcane configuration options, if you understand javascript 
+you may understand this script in 5-10min, it is not optimal for production, here you might wanna bundle.
+
+There is also no slow, or less slow (watchify), bundling process to wait for, whenever there is a new require 
+just rerun the command.
